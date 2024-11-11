@@ -54,8 +54,12 @@ const ProfilePage = () => {
     axios.get(url, { withCredentials: true })
       .then(response => {
         console.log("Fetched user posts:", response.data);
-        const sortedPosts = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        setPosts(sortedPosts); // Ensure data is an array and sorted by creation date
+        if (Array.isArray(response.data)) {
+          const sortedPosts = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          setPosts(sortedPosts); // Ensure data is an array and sorted by creation date
+        } else {
+          console.error('Error: Expected an array of posts');
+        }
       })
       .catch(error => {
         console.error('Error fetching posts:', error);
@@ -162,7 +166,7 @@ const ProfilePage = () => {
       alignItems: 'center',
       paddingTop: '20px',
       paddingBottom: '30px',
-      paddingLeft: '300px',
+      paddingLeft: '250px',
       backgroundColor: '#f0f4f8',
       minHeight: '100vh',
       maxWidth: '1250px',
@@ -191,7 +195,7 @@ const ProfilePage = () => {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
-      flex: 1, // Ensure profile info takes available space
+      flex: 1,
     },
     userName: {
       fontWeight: 'bold',
@@ -283,6 +287,7 @@ const ProfilePage = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
+      zIndex: 1000,
     },
     modalContent: {
       backgroundColor: 'white',
@@ -319,6 +324,8 @@ const ProfilePage = () => {
       borderRadius: '5px',
       cursor: 'pointer',
       transition: 'background-color 0.3s',
+      width: '100px',
+      margin: '5px',
     },
     modalButtonHover: {
       backgroundColor: '#0056b3',
@@ -501,7 +508,7 @@ const ProfilePage = () => {
             {Array.isArray(posts) && posts.map(post => (
               <div
                 key={post.post_id}
-                className="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105"
+                className="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 flex flex-col"
                 onClick={() => handlePostClick(post.post_id)}
               >
                 <div className="p-5 flex items-center space-x-3">
@@ -543,7 +550,7 @@ const ProfilePage = () => {
                   </video>
                 )}
 
-                <div className="p-5 flex justify-between items-center">
+                <div className="mt-auto p-5 flex justify-between items-center">
                   <span className="text-gray-600 text-sm">
                     ❤️ {post.likes_count} Likes
                   </span>
