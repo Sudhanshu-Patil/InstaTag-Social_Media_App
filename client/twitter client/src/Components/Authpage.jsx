@@ -79,7 +79,7 @@ function AuthPage() {
 
   return (
     <div>
-      <h1 className="text-4xl text-center text-black p-10">Welcome to the Social Media App</h1>
+      <h1 className="text-4xl text-center text-black p-10">InstaTag - Your Go To Social-App</h1>
       {errorMessage && <div className="text-red-500 text-center">{errorMessage}</div>}
 
       <div className="w-full bg-zinc-900 text-white p-10">
