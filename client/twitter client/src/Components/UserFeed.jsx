@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import SideNavbar from './SideNavbar'; // Import the SideNavbar component
 
-function UserFeed() {
+const UserFeed = () => {
   const [posts, setPosts] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
@@ -10,25 +11,8 @@ function UserFeed() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:3000/userfeed', {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        if (response.status === 401) {
-          setErrorMessage('Unauthorized: No user_id cookie found');
-          return;
-        }
-
-        if (response.ok) {
-          console.log(response);
-          const data = await response.json();
-          console.log(data);
-          setPosts(data);
-        } else {
-          const errorText = await response.text();
-          setErrorMessage(errorText);
-        }
+        const response = await axios.get('http://localhost:3000/userfeed', { withCredentials: true });
+        setPosts(response.data);
       } catch (error) {
         console.error('Error fetching user feed:', error);
         setErrorMessage('An error occurred. Please try again later.');
@@ -48,7 +32,7 @@ function UserFeed() {
     <div className="flex min-h-screen bg-gray-100">
       <SideNavbar /> {/* Add the SideNavbar here */}
       
-      <div className="flex-1 p-5">
+      <div className="flex-1 p-5 ml-64">
         <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Your Feed</h1>
         {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
 
