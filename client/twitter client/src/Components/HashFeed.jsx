@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SideNavbar from './SideNavbar'; // Import the SideNavbar component
 
-function UserFeed() {
+function HashFeed() {
   const [posts, setPosts] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ function UserFeed() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:3000/userfeed', {
+        const response = await fetch('http://localhost:3000/userfeedByHashtags', {
           method: 'GET',
           credentials: 'include',
         });
@@ -118,4 +118,5 @@ function UserFeed() {
   );
 }
 
-export default UserFeed;
+export default HashFeed;
+``

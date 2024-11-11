@@ -37,7 +37,7 @@ function AuthPage() {
         }),
       });
 
-      if (response.message==='success') {
+      if (response) {
         navigate('/userfeed');
       } else {
         const errorText = await response.text();

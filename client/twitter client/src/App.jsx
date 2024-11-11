@@ -3,7 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import UserFeed from './Components/UserFeed'
 import Authpage from './Components/Authpage'
 import Postdisplay from './Components/Postdisplay'
-import ProfilePage from './Components/ProfilePage'
+import PostDetailsWithComments from './Components/PostDetailsWithComments'
+import ExploreHashtags from './Components/ExploreHashtags';
+import PostDisplaywithhashtag from './Components/PostDisplaywithhashtag';
+import HashFeed from './Components/HashFeed';
+
 
 
 function App() {
@@ -14,8 +18,10 @@ function App() {
         <Routes>
         <Route path="/" element={<Authpage />} />
         <Route path="/userfeed" element={<UserFeed />} />
-        <Route path="/postdisplay" element={<Postdisplay />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path='/hashfeed' element={<HashFeed/>}/>
+        <Route path="/postdetails/:postId" element={<PostDetailsWithComments />} />
+        <Route path="/explorehashtags" element={<ExploreHashtags/>}/>
+        <Route path="/postdisplaywithhashtag/:hashtagId" element={<PostDisplaywithhashtag/>}/>
 
         </Routes>
     </Router>

@@ -13,12 +13,12 @@ const SideNavbar = () => {
                     </a>
                     <ul className="ml-6 mt-2 space-y-2">
                         <li>
-                            <a href="/posts/following/users" className="hover:underline">
+                            <a href="/userfeed" className="hover:underline">
                                 From Users You Follow
                             </a>
                         </li>
                         <li>
-                            <a href="/posts/following/hashtags" className="hover:underline">
+                            <a href="/hashfeed" className="hover:underline">
                                 From Hashtags You Follow
                             </a>
                         </li>
@@ -35,7 +35,7 @@ const SideNavbar = () => {
                     <span>Users</span>
                 </a>
 
-                <a href="/explore/hashtags" className="flex items-center p-2 hover:bg-blue-600 rounded">
+                <a href="/explorehashtags" className="flex items-center p-2 hover:bg-blue-600 rounded">
                     <FaHashtag className="text-xl mr-2" />
                     <span>Explore Hashtags</span>
                 </a>

@@ -1,66 +1,60 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import SideNavbar from './SideNavbar'; // Import the SideNavbar component
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import SideNavbar from './SideNavbar';
 
-function UserFeed() {
+function PostDisplaywithhashtag() {
   const [posts, setPosts] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const { hashtagId } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:3000/userfeed', {
-          method: 'GET',
+        const response = await fetch(`http://localhost:3000/viewpostsofahashtag`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ hashtagId }),
           credentials: 'include',
         });
 
-        if (response.status === 401) {
-          setErrorMessage('Unauthorized: No user_id cookie found');
-          return;
-        }
-
         if (response.ok) {
-          console.log(response);
           const data = await response.json();
           console.log(data);
           setPosts(data);
         } else {
-          const errorText = await response.text();
-          setErrorMessage(errorText);
+          console.error('Error fetching posts:', response.statusText);
         }
       } catch (error) {
-        console.error('Error fetching user feed:', error);
-        setErrorMessage('An error occurred. Please try again later.');
+        console.error('Error fetching posts:', error);
       }
     };
 
     fetchPosts();
-  }, []);
+  }, [hashtagId]);
 
   const handlePostClick = (postId) => {
-  
     console.log(postId);
     navigate(`/postdetails/${postId}`);
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <SideNavbar /> {/* Add the SideNavbar here */}
-      
-      <div className="flex-1 p-5">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Your Feed</h1>
-        {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
+      <SideNavbar />
 
-        {posts.length === 0 && !errorMessage ? (
-          <p className="text-gray-600 text-center">No posts found in your feed. Try following some users!</p>
+      <div className="flex-1 p-5">
+        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Posts with Hashtag {hashtagId}</h1>
+
+        {posts.length === 0 ? (
+          <p className="text-gray-600 text-center">No posts found for this hashtag.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post) => (
               <div
                 key={post.post_id}
-                className="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105"
-                onClick={() => handlePostClick(post.post_id)}
+                className="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 cursor-pointer"
+                onClick={() => handlePostClick(post.post_id)} // Add onClick event
               >
                 <div className="p-5 flex items-center space-x-3">
                   {post.user_profile_url ? (
@@ -75,7 +69,6 @@ function UserFeed() {
                   <div>
                     <p className="text-gray-800 font-semibold">{post.user_name}</p>
                     <p className="text-gray-500 text-xs">Post ID: {post.post_id}</p>
-                    <p className="text-gray-500 text-xs">User ID: {post.user_id}</p>
                   </div>
                 </div>
 
@@ -118,4 +111,4 @@ function UserFeed() {
   );
 }
 
-export default UserFeed;
+export default PostDisplaywithhashtag;
