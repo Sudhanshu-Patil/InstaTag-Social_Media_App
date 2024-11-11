@@ -7,7 +7,7 @@ import PostDetailsWithComments from './Components/PostDetailsWithComments'
 import ExploreHashtags from './Components/ExploreHashtags';
 import PostDisplaywithhashtag from './Components/PostDisplaywithhashtag';
 import HashFeed from './Components/HashFeed';
-
+import ProfilePage from './Components/ProfilePage';
 
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
         <Route path="/postdetails/:postId" element={<PostDetailsWithComments />} />
         <Route path="/explorehashtags" element={<ExploreHashtags/>}/>
         <Route path="/postdisplaywithhashtag/:hashtagId" element={<PostDisplaywithhashtag/>}/>
-
+        <Route path="/profile" element={<ProfilePage />} />
         </Routes>
     </Router>
   </>
