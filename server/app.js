@@ -130,8 +130,8 @@ app.post('/login', async (req, res) => {
   });
 
 //get user feed based on followers
-  app.get('/userfeed', async (req, res) => {
-    const userId = req.cookies.user_id;
+app.get('/userfeed', async (req, res) => {
+    const userId = req.cookies.user_id || req.query.userId;
 
     if (!userId) {
         return res.status(401).send("Unauthorized: No user_id cookie found");
@@ -197,7 +197,7 @@ app.post('/login', async (req, res) => {
 
 //get user feed based on hashtags (pending)
 app.get('/userfeedByHashtags', async (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.cookies.user_id || req.query.userId;
 
   if (!userId) {
       return res.status(401).send("Unauthorized: No user_id cookie found");
@@ -384,7 +384,7 @@ app.post('/commentspostdisplay', async (req, res) => {
 app.post('/likepost', async (req, res) => {
 
   const postId = req.body.post_id;
-  const currUser = req.cookies.user_id;
+  const currUser = req.cookies.user_id || req.query.userId;
 
   console.log( "user is ", currUser);
   console.log( "post is ", postId);
@@ -424,7 +424,7 @@ app.post('/likepost', async (req, res) => {
 app.post('/unlikepost', async (req, res) => {
     
       const postId = req.body.post_id;
-      const currUser = req.cookies.user_id;
+      const currUser = req.cookies.user_id || req.query.userId;
     
     //   console.log( "user is ", currUser);
     //   console.log( "post is ", postId);
@@ -462,7 +462,7 @@ app.post('/unlikepost', async (req, res) => {
 app.post('/likecomment', async (req, res) => {
   
     const commentId = req.body.comment_id;
-    const currUser = req.cookies.user_id;
+    const currUser = req.cookies.user_id || req.query.userId;
   
     console.log( "user is ", currUser);
     console.log( "comment is ", commentId);
@@ -550,7 +550,7 @@ app.post('/retrieveHashtagsOfPost', async (req, res) => {
 });
 
 app.post('/addComment', async (req, res) => {
-    const userId = req.cookies.user_id;
+    const userId = req.cookies.user_id || req.query.userId;
     const {postId,commentText} = req.body;
   
     if (!userId || !postId || !commentText) {
@@ -589,7 +589,7 @@ app.post('/addComment', async (req, res) => {
 //PROFILE PAGE ROUTES
 //GET BASIC USER INFO LIKE {user_id,username,profile_photo_url,bio,created_at,email}
 app.get('/getUserInfo', async (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.cookies.user_id || req.query.userId;
 
   if (!userId) {
       return res.status(400).send("Missing required fields");
@@ -645,7 +645,7 @@ app.get('/getUserInfo', async (req, res) => {
 
 //GET USER POSTS
 app.get('/userposts', async (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.cookies.user_id || req.query.userId;
 
   if (!userId) {
       return res.status(401).send("Unauthorized: No user_id cookie found");
@@ -703,7 +703,7 @@ app.get('/userposts', async (req, res) => {
 
 //show user his followers
 app.get('/showFollowers', async (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.cookies.user_id || req.query.userId;
 
   if (!userId) {
       return res.status(401).send("Unauthorized: No user_id cookie found");
@@ -757,7 +757,7 @@ app.get('/showFollowers', async (req, res) => {
 
 //show user his following
 app.get('/showFollowees', async (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.cookies.user_id || req.query.userId;
 
   if (!userId) {
       return res.status(401).send("Unauthorized: No user_id cookie found");
@@ -812,7 +812,7 @@ app.get('/showFollowees', async (req, res) => {
 //show user his liked posts
 app.post('/showUserLikedPosts', async (req, res) => 
 {
-  const userId = req.cookies.user_id;
+  const userId = req.cookies.user_id || req.query.userId;
 
   if (!userId) {
       return res.status(401).send("Unauthorized: No user_id cookie found");
@@ -869,7 +869,7 @@ app.post('/showUserLikedPosts', async (req, res) =>
 });
 
 app.get('/followedHashtags', async (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.cookies.user_id || req.query.userId;
 
   if (!userId) {
       return res.status(401).send("Unauthorized: No user_id cookie found");
@@ -890,7 +890,7 @@ app.get('/followedHashtags', async (req, res) => {
           }
       );
 
-      const resultSet = result.outBinds.hashtags_cursor;
+      const resultSet = result.outBinds.hashtag_cursor;
       const hashtags = [];
       let row;
 
@@ -920,7 +920,7 @@ app.get('/followedHashtags', async (req, res) => {
 });
 
 app.post('/newPost',async (req,res)=>{
-    const userId = req.cookies.user_id;
+    const userId = req.cookies.user_id || req.query.userId;
     const {caption,photoUrl,videoUrl,hashtags,location} = req.body;
     console.log("Fetching post for user:", userId);
   
@@ -928,19 +928,19 @@ app.post('/newPost',async (req,res)=>{
         const result = await connection.execute(
             `
             BEGIN
-                create_new_post(:user_id_in, :caption_in, :post_id_out);
+                create_new_post(:user_id_in, :caption_in, :postid_out);
             END;
             `,
             {
                 user_id_in: userId,
                 caption_in: caption,
-                post_id_out: { type: oracledb.NUMBER, dir: oracledb.BIND_OUT }
+                postid_out: { type: oracledb.NUMBER, dir: oracledb.BIND_OUT }
             }
         );
   
-        const postId = result.outBinds.post_id_out;
+        const postId = result.outBinds.postid_out;
       
-        if(photoUrl){
+        if (photoUrl) {
             await connection.execute(
                 `
                 BEGIN
@@ -954,7 +954,7 @@ app.post('/newPost',async (req,res)=>{
             );
         }
   
-        if(videoUrl){
+        if (videoUrl) {
             await connection.execute(
                 `
                 BEGIN
@@ -1014,7 +1014,7 @@ app.post('/newPost',async (req,res)=>{
 
 //get all users who are not followed by the user(pending)
 app.get('/exploreusers',async (req,res)=>{
-    const userId = req.cookies.user_id;
+    const userId = req.cookies.user_id || req.query.userId;
   
     if (!userId) {
         return res.status(401).send("Unauthorized: No user_id cookie found");
@@ -1069,7 +1069,7 @@ app.get('/exploreusers',async (req,res)=>{
 
 // EXPLORE HASHTAGS PAGE
 app.get('/explorehashtags', async (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.cookies.user_id || req.query.userId;
 
   if (!userId) {
       return res.status(401).send("Unauthorized: No user_id cookie found");
@@ -1121,7 +1121,7 @@ app.get('/explorehashtags', async (req, res) => {
 
 
 app.post('/followHashtag', async (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.cookies.user_id || req.query.userId;
   const {hashtagId} = req.body;
 
   if (!userId || !hashtagId) {
@@ -1214,16 +1214,54 @@ app.post('/viewpostsofahashtag', async (req, res) => {
     
 });
 
+// Update user profile
+app.post('/updateProfile', async (req, res) => {
+  const { userId, username, bio } = req.body;
 
+  if (!userId || !username || !bio) {
+    return res.status(400).send("Missing required fields");
+  }
 
+  try {
+    // Check if the username already exists
+    const checkUsernameResult = await connection.execute(
+      `
+      SELECT COUNT(*) AS count
+      FROM users
+      WHERE username = :username AND user_id != :userId
+      `,
+      {
+        username: username,
+        userId: userId
+      }
+    );
 
+    const usernameCount = checkUsernameResult.rows[0].COUNT;
+    if (usernameCount > 0) {
+      return res.status(409).send("Username already exists");
+    }
 
+    // Call the stored procedure to update the user profile
+    await connection.execute(
+      `
+      BEGIN
+        update_user_profile(:user_id_in, :username_in, :bio_in);
+      END;
+      `,
+      {
+        user_id_in: userId,
+        username_in: username,
+        bio_in: bio
+      },
+      { autoCommit: true }
+    );
 
-
-
-
-
-
+    res.status(200).send("Profile updated successfully");
+  } catch (err) {
+    console.error("Error updating profile:", err);
+    res.status(500).send("Error updating profile: " + err.message);
+  }
+});
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
