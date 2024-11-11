@@ -162,16 +162,16 @@ const ProfilePage = () => {
       alignItems: 'center',
       paddingTop: '20px',
       paddingBottom: '30px',
-      paddingLeft: '100px',
+      paddingLeft: '300px',
       backgroundColor: '#f0f4f8',
       minHeight: '100vh',
-      maxWidth: '800px',
+      maxWidth: '1250px',
       margin: '0 auto',
     },
     profileHeader: {
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between', // Added to space between profile info and update button
+      justifyContent: 'space-between',
       marginBottom: '20px',
       backgroundColor: '#ffffff',
       padding: '20px',
@@ -207,11 +207,11 @@ const ProfilePage = () => {
     },
     profileButtons: {
       display: 'flex',
-      justifyContent: 'center',
-      marginBottom: '20px',
+      justifyContent: 'space-around',
+      marginBottom: '30px',
     },
     profileButton: {
-      margin: '0 10px',
+      margin: '0 30px',
       padding: '10px 20px',
       border: 'none',
       backgroundColor: '#007bff',
@@ -219,10 +219,13 @@ const ProfilePage = () => {
       borderRadius: '5px',
       cursor: 'pointer',
       transition: 'background-color 0.3s',
-      alignSelf: 'center', // Align the button vertically in the center
+      alignSelf: 'center',
     },
     profileButtonHover: {
       backgroundColor: '#0056b3',
+    },
+    profileButtonActive: {
+      backgroundColor: '#0056b3', // Active button color
     },
     profileContent: {
       width: '100%',
@@ -339,6 +342,51 @@ const ProfilePage = () => {
       fontSize: '1.2em',
       marginBottom: '10px',
     },
+    postContainer: {
+      backgroundColor: 'white',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      overflow: 'hidden',
+      transition: 'transform 0.3s',
+      cursor: 'pointer',
+    },
+    postContainerHover: {
+      transform: 'scale(1.05)',
+    },
+    postHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: '10px',
+    },
+    postProfileImage: {
+      width: '40px',
+      height: '40px',
+      borderRadius: '50%',
+      objectFit: 'cover',
+      marginRight: '10px',
+    },
+    postContent: {
+      padding: '10px',
+    },
+    postImage: {
+      width: '100%',
+      height: '200px',
+      objectFit: 'cover',
+    },
+    postVideo: {
+      width: '100%',
+      height: '200px',
+    },
+    postFooter: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '10px',
+    },
+    postButton: {
+      color: '#007bff',
+      cursor: 'pointer',
+    },
   };
 
   return (
@@ -420,7 +468,10 @@ const ProfilePage = () => {
         )}
         <div style={styles.profileButtons}>
           <button
-            style={styles.profileButton}
+            style={{
+              ...styles.profileButton,
+              ...(activeSection === 'posts' && styles.profileButtonActive),
+            }}
             onMouseOver={(e) => (e.target.style.backgroundColor = styles.profileButtonHover.backgroundColor)}
             onMouseOut={(e) => (e.target.style.backgroundColor = styles.profileButton.backgroundColor)}
             onClick={() => setActiveSection('posts')}
@@ -445,16 +496,65 @@ const ProfilePage = () => {
           </button>
         </div>
         <div style={styles.profileContent}>
-          {activeSection === 'posts' && (
-            <div style={styles.section}>
-              {Array.isArray(posts) && posts.map(post => ( // Ensure posts is an array
-                <div key={post.post_id} style={styles.item} onClick={() => handlePostClick(post.post_id)}>
-                  <p style={styles.caption}>{post.caption}</p>
-                  <p style={styles.date}>{new Date(post.created_at).toLocaleString()}</p>
+        {activeSection === 'posts' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.isArray(posts) && posts.map(post => (
+              <div
+                key={post.post_id}
+                className="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105"
+                onClick={() => handlePostClick(post.post_id)}
+              >
+                <div className="p-5 flex items-center space-x-3">
+                  {post.user_profile_url ? (
+                    <img
+                      src={post.user_profile_url}
+                      alt="User Profile"
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gray-300" />
+                  )}
+                  <div>
+                    <p className="text-gray-800 font-semibold">{post.user_name}</p>
+                    <p className="text-gray-500 text-xs">Post ID: {post.post_id}</p>
+                    <p className="text-gray-500 text-xs">User ID: {post.user_id}</p>
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
+
+                <div className="p-5">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-2">{post.caption}</h2>
+                  <p className="text-gray-400 text-sm mb-4">
+                    Posted on: {new Date(post.created_at).toLocaleString()}
+                  </p>
+                </div>
+
+                {post.photo_url && (
+                  <img
+                    src={post.photo_url}
+                    alt="Post"
+                    className="w-full h-48 object-cover"
+                  />
+                )}
+
+                {post.video_url && (
+                  <video controls className="w-full h-48">
+                    <source src={post.video_url} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                )}
+
+                <div className="p-5 flex justify-between items-center">
+                  <span className="text-gray-600 text-sm">
+                    ❤️ {post.likes_count} Likes
+                  </span>
+                  <button className="text-blue-500 hover:text-blue-600 font-semibold">Like</button>
+                  <button className="text-blue-500 hover:text-blue-600 font-semibold">Comment</button>
+                  <button className="text-blue-500 hover:text-blue-600 font-semibold">Share</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         {activeSection === 'followers' && (
           <div style={styles.followersFollowingContainer}>
             <div style={styles.followersColumn}>
