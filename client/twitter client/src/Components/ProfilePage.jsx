@@ -352,7 +352,6 @@ const ProfilePage = () => {
             src={userData.profile_photo_url || defaultProfileImage}
             alt="Profile"
             style={styles.profilePhoto}
-            onError={(e) => { e.target.onerror = null; e.target.src = defaultProfileImage; }}
           />
           <div style={styles.profileInfo}>
             <h2 style={styles.userName}>{userData.user_name}</h2> {/* Ensure user_name is displayed */}
