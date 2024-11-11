@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
-import defaultProfileImage from '../assets/default-profile.png'; // Adjust the import path as necessary
 import SideNavbar from './SideNavbar';
 
 const ProfilePage = () => {
@@ -349,7 +348,7 @@ const ProfilePage = () => {
       <div style={styles.profilePage}>
         <div style={styles.profileHeader}>
           <img
-            src={userData.profile_photo_url || defaultProfileImage}
+            src={userData.profile_photo_url}
             alt="Profile"
             style={styles.profilePhoto}
           />
