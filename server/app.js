@@ -1013,59 +1013,52 @@ app.post('/newPost',async (req,res)=>{
 //EXPLORE USERS PAGE
 
 //get all users who are not followed by the user(pending)
-app.get('/exploreusers',async (req,res)=>{
-    const userId = req.cookies.user_id || req.query.userId;
-  
-    if (!userId) {
-        return res.status(401).send("Unauthorized: No user_id cookie found");
-    }
-  
-    console.log("Fetching users for user:", userId);
-  
-    try {
-        const result = await connection.execute(
-            `
-            BEGIN
-                show_user_not_followed_users(:user_id_in, :users_cursor);
-            END;
-            `,
-            {
-                user_id_in: userId,
-                users_cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
-            }
-        );
-  
-        const resultSet = result.outBinds.users_cursor;
-        const users = [];
-        let row;
-  
-        while ((row = await resultSet.getRow())) {
-            users.push({
-                user_id: row[0],
-                username: row[1],
-                profile_photo_url: row[2],
-                created_at: row[3]
-            });
-        }
-  
-        await resultSet.close();
-  
-        res.setHeader('Content-Type', 'application/json');
-  
-        if (users.length === 0) {
-            res.send("No users found");
-  
-        } else {
-            res.send(users);
-        }
-  
-    } catch (err) {
-        console.error("Error fetching users for user:", err);
-        res.status(500).send("Error fetching users for user: " + err.message);
-    }
-  
-  });
+app.get('/usersNotFollowed', async (req, res) => {
+  const userId = req.cookies.user_id;
 
+  if (!userId) {
+    return res.status(401).send("Unauthorized: No user_id cookie found");
+  }
+
+  console.log("Fetching users not followed by user:", userId);
+
+  try {
+    const result = await connection.execute(
+      `
+      BEGIN
+          show_users_not_followed(:user_id_in, :users_cursor);
+      END;
+      `,
+      {
+        user_id_in: userId,
+        users_cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
+      }
+    );
+
+    const resultSet = result.outBinds.users_cursor;
+    const users = [];
+    let row;
+
+    while ((row = await resultSet.getRow())) {
+      users.push({
+        user_id: row[0],
+        username: row[1],
+        profile_photo_url: row[2],
+        bio: row[3],
+        created_at: row[4],
+        email: row[5]
+      });
+    }
+
+    await resultSet.close();
+
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(users.length > 0 ? users : { message: "No users found" });
+  } catch (err) {
+    console.error("Error fetching users not followed:", err);
+    res.status(500).send("Error fetching users not followed: " + err.message);
+  }
+});
 
 // EXPLORE HASHTAGS PAGE
 app.get('/explorehashtags', async (req, res) => {
