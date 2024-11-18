@@ -16,6 +16,9 @@ BEGIN
 
     INSERT INTO login(user_id)
     VALUES (user_id);
+
+    --Set random profile photo
+    --SELECT 'https://picsum.photos/100?' || DBMS_RANDOM.VALUE(1, 1000000) INTO profile_photo_url FROM dual;
     
     DBMS_OUTPUT.PUT_LINE('User Created with ID: ' || user_id);
 
@@ -24,6 +27,8 @@ BEGIN
     COMMIT;
 END;
 /
+
+
 
 
 -- procedure to create a new login
@@ -260,8 +265,7 @@ END;
 CREATE OR REPLACE PROCEDURE add_comment_to_post(
     post_id_in IN NUMBER,
     user_id_in IN NUMBER,    
-    comment_text_in IN VARCHAR2,
-    comments_cursor OUT SYS_REFCURSOR
+    comment_text_in IN VARCHAR2
 )
 IS
 BEGIN
@@ -271,6 +275,7 @@ BEGIN
 
     DBMS_OUTPUT.PUT_LINE('Comment Added to Post');
 END;
+/
 
 
 --PROFILE PAGE 
@@ -496,7 +501,40 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Location Added to Post');
 END;
 /
+--users page
+-- SHOW_USERS_NOT_FOLLOWED
+CREATE OR REPLACE PROCEDURE show_users_not_followed(
+    user_id_in IN NUMBER,
+    users_cursor OUT SYS_REFCURSOR
+)
+IS
+BEGIN
+    OPEN users_cursor FOR
+        SELECT u.user_id, u.username, u.profile_photo_url, u.bio, u.created_at,u.email
+        FROM users u
+        WHERE u.user_id NOT IN (
+            SELECT f.followee_id
+            FROM follows f
+            WHERE f.follower_id = user_id_in
+        );
+END;
+/
 
+--follow a user
+CREATE OR REPLACE PROCEDURE follow_user(
+    follower_id_in IN NUMBER,
+    followee_id_in IN NUMBER
+)
+IS
+    follow_id NUMBER;
+BEGIN
+    INSERT INTO follows(follower_id, followee_id)
+    VALUES(follower_id_in, followee_id_in)
+    RETURNING follow_id INTO follow_id;
+
+    DBMS_OUTPUT.PUT_LINE('User Followed with ID: ' || follow_id);
+END;
+/
 
 --EXPLORE HASHTAGS PAGE
 --Procedure to show user his/her not followed hashtags
@@ -594,21 +632,7 @@ BEGIN
 END;
 /
 
--- Show list of all users not followed by a user
-CREATE OR REPLACE PROCEDURE show_users_not_followed(
-    user_id_in IN NUMBER,
-    users_cursor OUT SYS_REFCURSOR
-)
-IS
-BEGIN
-    OPEN users_cursor FOR
-        SELECT u.user_id, u.username, u.profile_photo_url, u.bio, u.created_at, u.email
-        FROM users u
-        WHERE u.user_id != user_id_in
-        AND u.user_id NOT IN (
-            SELECT f.followee_id
-            FROM follows f
-            WHERE f.follower_id = user_id_in
-        );
-END;
-/
+
+
+
+clear screen;
