@@ -2,19 +2,31 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function AuthPage() {
-  const [formData, setFormData] = useState({
+  const [signupData, setSignupData] = useState({
     user_name: '',
     email: '',
     bio: '',
     password: '',
   });
+  const [loginData, setLoginData] = useState({
+    email: '',
+    password: '',
+  });
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  const handleInputChange = (e) => {
+  const handleSignupInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setSignupData({
+      ...signupData,
+      [name]: value,
+    });
+  };
+
+  const handleLoginInputChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData({
+      ...loginData,
       [name]: value,
     });
   };
@@ -28,16 +40,11 @@ function AuthPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',  // Allows cookies to be sent and received
-        body: JSON.stringify({
-          user_name: formData.user_name,
-          email: formData.email,
-          bio: formData.bio,
-          password: formData.password,
-        }),
+        credentials: 'include',
+        body: JSON.stringify(signupData),
       });
 
-      if (response) {
+      if (response.ok) {
         navigate('/userfeed');
       } else {
         const errorText = await response.text();
@@ -58,11 +65,8 @@ function AuthPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',  // Allows cookies to be sent and received
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
+        credentials: 'include',
+        body: JSON.stringify(loginData),
       });
 
       if (response.ok) {
@@ -78,83 +82,92 @@ function AuthPage() {
   };
 
   return (
-    <div>
-      <h1 className="text-4xl text-center text-black p-10">InstaTag - Your Go To Social-App</h1>
-      {errorMessage && <div className="text-red-500 text-center">{errorMessage}</div>}
+    <div>  
+      <header className="text-center p-10 bg-gray-200">  
+        <h1 className="text-4xl text-black">
+        <img src="https://img.icons8.com/ios/452/instagram-new.png" alt="Instagram Logo" className="w-20 h-20 mx-auto" /> 
+          InstaTag - Your Go To Social-App
+          </h1>
+      </header>
+      {errorMessage && <div className="text-red-500 text-center mt-4">{errorMessage}</div>}
 
-      <div className="w-full bg-zinc-900 text-white p-10">
-        <form onSubmit={handleSignup}>
-          <input
-            name="user_name"
-            type="text"
-            placeholder="Username"
-            className="px-3 py-2 rounded-md outline-none bg-transparent border-2 border-gray-500 mb-4"
-            value={formData.user_name}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            className="px-3 py-2 rounded-md outline-none bg-transparent border-2 border-gray-500 mb-4"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            name="bio"
-            type="text"
-            placeholder="Bio"
-            className="px-3 py-2 rounded-md outline-none bg-transparent border-2 border-gray-500 mb-4"
-            value={formData.bio}
-            onChange={handleInputChange}
-          />
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            className="px-3 py-2 rounded-md outline-none bg-transparent border-2 border-gray-500 mb-4"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
-          />
-          <button
-            type="submit"
-            className="px-3 py-2 rounded-md outline-none bg-blue-500 border-2 border-gray-500"
-          >
-            Create Account
-          </button>
-        </form>
-      </div>
+      <div className="flex justify-center items-start p-10 bg-gray-100">
+        <div className="w-1/2 bg-white text-black p-10 shadow-md rounded-md mr-4">
+          <h2 className="text-2xl mb-6 text-center">Sign Up</h2>
+          <form onSubmit={handleSignup}>
+            <input
+              name="user_name"
+              type="text"
+              placeholder="Username"
+              className="px-3 py-2 rounded-md outline-none bg-gray-50 border-2 border-gray-300 mb-4 w-full"
+              value={signupData.user_name}
+              onChange={handleSignupInputChange}
+              required
+            />
+            <input
+              name="email"
+              type="email"
+              placeholder="Email"
+              className="px-3 py-2 rounded-md outline-none bg-gray-50 border-2 border-gray-300 mb-4 w-full"
+              value={signupData.email}
+              onChange={handleSignupInputChange}
+              required
+            />
+            <input
+              name="bio"
+              type="text"
+              placeholder="Bio"
+              className="px-3 py-2 rounded-md outline-none bg-gray-50 border-2 border-gray-300 mb-4 w-full"
+              value={signupData.bio}
+              onChange={handleSignupInputChange}
+            />
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              className="px-3 py-2 rounded-md outline-none bg-gray-50 border-2 border-gray-300 mb-4 w-full"
+              value={signupData.password}
+              onChange={handleSignupInputChange}
+              required
+            />
+            <button
+              type="submit"
+              className="px-3 py-2 rounded-md outline-none bg-blue-500 text-white w-full"
+            >
+              Create Account
+            </button>
+          </form>
+        </div>
 
-      <div className="w-full bg-zinc-900 text-white p-10">
-        <form onSubmit={handleLogin}>
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            className="px-3 py-2 rounded-md outline-none bg-transparent border-2 border-gray-500 mb-4"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            className="px-3 py-2 rounded-md outline-none bg-transparent border-2 border-gray-500 mb-4"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
-          />
-          <button
-            type="submit"
-            className="px-3 py-2 rounded-md outline-none bg-blue-500 border-2 border-gray-500"
-          >
-            Login
-          </button>
-        </form>
+        <div className="w-1/2 bg-white text-black p-10 shadow-md rounded-md ml-4">
+          <h2 className="text-2xl mb-6 text-center">Log In</h2>
+          <form onSubmit={handleLogin}>
+            <input
+              name="email"
+              type="email"
+              placeholder="Email"
+              className="px-3 py-2 rounded-md outline-none bg-gray-50 border-2 border-gray-300 mb-4 w-full"
+              value={loginData.email}
+              onChange={handleLoginInputChange}
+              required
+            />
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              className="px-3 py-2 rounded-md outline-none bg-gray-50 border-2 border-gray-300 mb-4 w-full"
+              value={loginData.password}
+              onChange={handleLoginInputChange}
+              required
+            />
+            <button
+              type="submit"
+              className="px-3 py-2 rounded-md outline-none bg-blue-500 text-white w-full"
+            >
+              Login
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
