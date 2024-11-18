@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaUser, FaHashtag, FaUserFriends, FaHome } from 'react-icons/fa';
+import { FaUser, FaHashtag, FaUserFriends, FaHome, FaSignOutAlt, FaInstagram } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 
 const SideNavbar = () => {
@@ -9,9 +9,17 @@ const SideNavbar = () => {
         navigate('/userfeed');
     };
 
+    const handleLogout = () => {
+        window.location.href = 'http://localhost:5173/';
+    };
+
     return (
         <div className="w-64 bg-blue-500 h-screen p-5 text-white fixed top-0 left-0">
-            <h2 className="text-2xl font-bold mb-6 cursor-pointer" onClick={handleInstaTagClick}>
+            <h2
+                className="text-2xl font-bold mb-6 cursor-pointer flex items-center"
+                onClick={handleInstaTagClick}
+            >
+                <FaInstagram className="text-3xl mr-2" />
                 InstaTag
             </h2>
             <nav className="flex flex-col space-y-4">
@@ -52,6 +60,13 @@ const SideNavbar = () => {
                     </Link>
                 </div>
             </nav>
+            <button
+                className="mt-8 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded flex items-center"
+                onClick={handleLogout}
+            >
+                <FaSignOutAlt className="text-xl mr-2" />
+                Log Out
+            </button>
         </div>
     );
 };
