@@ -133,7 +133,7 @@ export default function PostDisplay() {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="flex bg-gray-900 text-white min-h-screen">
+    <div className="flex bg-white-900 text-white min-h-screen">
         <SideNavbar />
         <div className="w-full max-w-xl bg-black p-4 sm:p-6 lg:p-8 ml-0 lg:ml-[23vw] rounded-lg transition-all duration-300">
             {postDetails && (
