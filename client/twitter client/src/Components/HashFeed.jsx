@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import SideNavbar from './SideNavbar'; // Import the SideNavbar component
 
 function HashFeed() {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]); // Ensure posts is initialized as an array
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
@@ -21,10 +21,8 @@ function HashFeed() {
         }
 
         if (response.ok) {
-          console.log(response);
           const data = await response.json();
-          console.log(data);
-          setPosts(data);
+          setPosts(Array.isArray(data) ? data : []); // Ensure it's an array
         } else {
           const errorText = await response.text();
           setErrorMessage(errorText);
@@ -39,22 +37,19 @@ function HashFeed() {
   }, []);
 
   const handlePostClick = (postId) => {
-  
-    console.log(postId);
     navigate(`/postdetails/${postId}`);
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <SideNavbar /> {/* Add the SideNavbar here */}
-      
-      <div className="flex-1 p-5">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Your Feed</h1>
+      <SideNavbar /> {/* Include the SideNavbar */}
+      <div className="flex-1 ml-64 p-5"> {/* Adjust margin-left for content */}
+        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Your Hashtag Feed</h1>
         {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
 
-        {posts.length === 0 && !errorMessage ? (
-          <p className="text-gray-600 text-center">No posts found in your feed. Try following some users!</p>
-        ) : (
+        {Array.isArray(posts) && posts.length === 0 && !errorMessage ? (
+          <p className="text-gray-600 text-center">No posts found in your feed. Try following some users or using hashtags!</p>
+        ) : Array.isArray(posts) ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post) => (
               <div
@@ -112,6 +107,8 @@ function HashFeed() {
               </div>
             ))}
           </div>
+        ) : (
+          <p className="text-red-500 text-center">Unexpected error: Invalid data format.</p>
         )}
       </div>
     </div>
@@ -119,4 +116,3 @@ function HashFeed() {
 }
 
 export default HashFeed;
-``
