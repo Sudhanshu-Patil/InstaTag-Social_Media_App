@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import SideNavbar from './SideNavbar'; // Import the SideNavbar component
 
 const UserFeed = () => {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]); // Ensure posts is initialized as an array
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
@@ -12,7 +12,8 @@ const UserFeed = () => {
     const fetchPosts = async () => {
       try {
         const response = await axios.get('http://localhost:3000/userfeed', { withCredentials: true });
-        setPosts(response.data);
+        console.log(response.data); // Log the API response for debugging
+        setPosts(Array.isArray(response.data) ? response.data : []); // Ensure it's an array
       } catch (error) {
         console.error('Error fetching user feed:', error);
         setErrorMessage('An error occurred. Please try again later.');
@@ -23,22 +24,21 @@ const UserFeed = () => {
   }, []);
 
   const handlePostClick = (postId) => {
-  
     console.log(postId);
     navigate(`/postdetails/${postId}`);
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <SideNavbar /> {/* Add the SideNavbar here */}
+      <SideNavbar /> {/* Include the SideNavbar */}
       
       <div className="flex-1 p-5 ml-64">
         <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Your Feed</h1>
         {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
 
-        {posts.length === 0 && !errorMessage ? (
+        {Array.isArray(posts) && posts.length === 0 && !errorMessage ? (
           <p className="text-gray-600 text-center">No posts found in your feed. Try following some users!</p>
-        ) : (
+        ) : Array.isArray(posts) ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post) => (
               <div
@@ -96,10 +96,12 @@ const UserFeed = () => {
               </div>
             ))}
           </div>
+        ) : (
+          <p className="text-red-500 text-center">Unexpected error: Invalid data format.</p>
         )}
       </div>
     </div>
   );
-}
+};
 
 export default UserFeed;
